@@ -11774,95 +11774,118 @@ var _tjmw$elm_snake$Main$view = function (_p1) {
 						_elm_lang$core$Color$black)
 					]))));
 };
+var _tjmw$elm_snake$Main$togglePaused = function (game) {
+	return _elm_lang$core$Native_Utils.update(
+		game,
+		{
+			paused: _elm_lang$core$Basics$not(game.paused)
+		});
+};
+var _tjmw$elm_snake$Main$randomCoordGenerator = A2(
+	_elm_lang$core$Random$int,
+	_elm_lang$core$Basics$round(0 - _tjmw$elm_snake$Globals$halfWidth),
+	_elm_lang$core$Basics$round(_tjmw$elm_snake$Globals$halfWidth));
 var _tjmw$elm_snake$Main$defaultGame = {
 	snake: _tjmw$elm_snake$Snake$initialSnake,
 	apple: A2(_tjmw$elm_snake$Apple$Apple, -50, -50),
 	score: 0,
-	size: A2(_elm_lang$window$Window$Size, 0, 0)
+	size: A2(_elm_lang$window$Window$Size, 0, 0),
+	paused: false
 };
-var _tjmw$elm_snake$Main$Game = F4(
-	function (a, b, c, d) {
-		return {snake: a, apple: b, score: c, size: d};
+var _tjmw$elm_snake$Main$Game = F5(
+	function (a, b, c, d, e) {
+		return {snake: a, apple: b, score: c, size: d, paused: e};
 	});
 var _tjmw$elm_snake$Main$NoOp = {ctor: 'NoOp'};
+var _tjmw$elm_snake$Main$Pause = {ctor: 'Pause'};
 var _tjmw$elm_snake$Main$Collide = function (a) {
 	return {ctor: 'Collide', _0: a};
 };
+var _tjmw$elm_snake$Main$collideCmdWithRandomTuple = A2(
+	_elm_lang$core$Random$generate,
+	_tjmw$elm_snake$Main$Collide,
+	A3(
+		_elm_lang$core$Random$map2,
+		F2(
+			function (v0, v1) {
+				return {ctor: '_Tuple2', _0: v0, _1: v1};
+			}),
+		_tjmw$elm_snake$Main$randomCoordGenerator,
+		_tjmw$elm_snake$Main$randomCoordGenerator));
 var _tjmw$elm_snake$Main$update = F2(
 	function (msg, game) {
-		var _p4 = msg;
-		switch (_p4.ctor) {
-			case 'NoOp':
+		if (game.paused) {
+			var _p4 = msg;
+			if (_p4.ctor === 'Pause') {
+				return {
+					ctor: '_Tuple2',
+					_0: _tjmw$elm_snake$Main$togglePaused(game),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
 				return {ctor: '_Tuple2', _0: game, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'Resize':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						game,
-						{size: _p4._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ChangeDirection':
-				var _p5 = game;
-				var snake = _p5.snake;
-				var snake1 = A2(_tjmw$elm_snake$Snake$updateSnakeDirection, _p4._0, snake);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						game,
-						{snake: snake1}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Tick':
-				var _p6 = game;
-				var snake = _p6.snake;
-				var apple = _p6.apple;
-				var score = _p6.score;
-				var snake1 = A2(_tjmw$elm_snake$Snake$updateSnakePosition, _p4._0, snake);
-				var eatingAnApple = A2(_tjmw$elm_snake$Collision$colliding, snake1, apple);
-				var cmd = function () {
-					if (eatingAnApple) {
-						var randomIntGenerator = A2(
-							_elm_lang$core$Random$int,
-							_elm_lang$core$Basics$round(0 - _tjmw$elm_snake$Globals$halfWidth),
-							_elm_lang$core$Basics$round(_tjmw$elm_snake$Globals$halfWidth));
-						return A2(
-							_elm_lang$core$Random$generate,
-							_tjmw$elm_snake$Main$Collide,
-							A3(
-								_elm_lang$core$Random$map2,
-								F2(
-									function (v0, v1) {
-										return {ctor: '_Tuple2', _0: v0, _1: v1};
-									}),
-								randomIntGenerator,
-								randomIntGenerator));
-					} else {
-						return _elm_lang$core$Platform_Cmd$none;
-					}
-				}();
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						game,
-						{snake: snake1}),
-					_1: cmd
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						game,
-						{
-							apple: A2(
-								_tjmw$elm_snake$Apple$Apple,
-								_elm_lang$core$Basics$toFloat(_p4._0._0),
-								_elm_lang$core$Basics$toFloat(_p4._0._1)),
-							score: game.score + 1,
-							snake: _tjmw$elm_snake$Snake$increaseVelocity(game.snake)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+			}
+		} else {
+			var _p5 = msg;
+			switch (_p5.ctor) {
+				case 'NoOp':
+					return {ctor: '_Tuple2', _0: game, _1: _elm_lang$core$Platform_Cmd$none};
+				case 'Pause':
+					return {
+						ctor: '_Tuple2',
+						_0: _tjmw$elm_snake$Main$togglePaused(game),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'Resize':
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							game,
+							{size: _p5._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'ChangeDirection':
+					var _p6 = game;
+					var snake = _p6.snake;
+					var snake_ = A2(_tjmw$elm_snake$Snake$updateSnakeDirection, _p5._0, snake);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							game,
+							{snake: snake_}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'Tick':
+					var _p7 = game;
+					var snake = _p7.snake;
+					var apple = _p7.apple;
+					var score = _p7.score;
+					var snake_ = A2(_tjmw$elm_snake$Snake$updateSnakePosition, _p5._0, snake);
+					var eatingAnApple = A2(_tjmw$elm_snake$Collision$colliding, snake_, apple);
+					var cmd = eatingAnApple ? _tjmw$elm_snake$Main$collideCmdWithRandomTuple : _elm_lang$core$Platform_Cmd$none;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							game,
+							{snake: snake_}),
+						_1: cmd
+					};
+				default:
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							game,
+							{
+								apple: A2(
+									_tjmw$elm_snake$Apple$Apple,
+									_elm_lang$core$Basics$toFloat(_p5._0._0),
+									_elm_lang$core$Basics$toFloat(_p5._0._1)),
+								score: game.score + 1,
+								snake: _tjmw$elm_snake$Snake$increaseVelocity(game.snake)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+			}
 		}
 	});
 var _tjmw$elm_snake$Main$Tick = function (a) {
@@ -11872,8 +11895,8 @@ var _tjmw$elm_snake$Main$ChangeDirection = function (a) {
 	return {ctor: 'ChangeDirection', _0: a};
 };
 var _tjmw$elm_snake$Main$keyCodeToMsg = function (keyCode) {
-	var _p7 = keyCode;
-	switch (_p7) {
+	var _p8 = keyCode;
+	switch (_p8) {
 		case 37:
 			return _tjmw$elm_snake$Main$ChangeDirection(_tjmw$elm_snake$Snake$Left);
 		case 38:
@@ -11882,6 +11905,8 @@ var _tjmw$elm_snake$Main$keyCodeToMsg = function (keyCode) {
 			return _tjmw$elm_snake$Main$ChangeDirection(_tjmw$elm_snake$Snake$Right);
 		case 40:
 			return _tjmw$elm_snake$Main$ChangeDirection(_tjmw$elm_snake$Snake$Down);
+		case 80:
+			return _tjmw$elm_snake$Main$Pause;
 		default:
 			return _tjmw$elm_snake$Main$NoOp;
 	}
@@ -11894,7 +11919,7 @@ var _tjmw$elm_snake$Main$init = {
 	_0: _tjmw$elm_snake$Main$defaultGame,
 	_1: A3(
 		_elm_lang$core$Task$perform,
-		function (_p8) {
+		function (_p9) {
 			return _tjmw$elm_snake$Main$NoOp;
 		},
 		_tjmw$elm_snake$Main$Resize,
@@ -11907,9 +11932,9 @@ var _tjmw$elm_snake$Main$subscriptions = function (game) {
 				_elm_lang$window$Window$resizes(_tjmw$elm_snake$Main$Resize),
 				_elm_lang$keyboard$Keyboard$downs(_tjmw$elm_snake$Main$keyCodeToMsg),
 				_elm_lang$animation_frame$AnimationFrame$diffs(
-				function (_p9) {
+				function (_p10) {
 					return _tjmw$elm_snake$Main$Tick(
-						_elm_lang$core$Time$inSeconds(_p9));
+						_elm_lang$core$Time$inSeconds(_p10));
 				})
 			]));
 };
