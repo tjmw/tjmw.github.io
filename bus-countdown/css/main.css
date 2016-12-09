@@ -1,4 +1,19 @@
-.stop span {
-  padding-right: 1em;
-  padding-bottom: 1em;
+#main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1em;
+  color: #354B5E;
+}
+
+table {
+  margin: 2em 0;
+}
+
+.clickable-table tr:hover {
+  background: #FCF9D4;
+  cursor: pointer;
+}
+
+.button-large {
+  font-size: 110%;
 }
