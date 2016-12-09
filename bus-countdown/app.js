@@ -22868,15 +22868,22 @@
 			return {naptanId: a, commonName: b, indicator: c};
 		});
 
-	var _tjmw$bus_countdown$Model$Model = F3(
-		function (a, b, c) {
-			return {naptanId: a, predictions: b, possibleStops: c};
+	var _tjmw$bus_countdown$Model$Model = F4(
+		function (a, b, c, d) {
+			return {naptanId: a, predictions: b, possibleStops: c, loading: d};
 		});
-	var _tjmw$bus_countdown$Model$emptyModel = A3(
+	var _tjmw$bus_countdown$Model$emptyModel = A4(
 		_tjmw$bus_countdown$Model$Model,
 		'',
 		_elm_lang$core$Dict$empty,
-		{ctor: '[]'});
+		{ctor: '[]'},
+		false);
+
+	var _tjmw$bus_countdown$Loading$toggleLoading = function (model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{loading: !model.loading});
+	};
 
 	var _tjmw$bus_countdown$Ports$registerForLivePredictions = _elm_lang$core$Native_Platform.outgoingPort(
 		'registerForLivePredictions',
@@ -23071,7 +23078,10 @@
 				case 'GeoLocation':
 					return A2(_tjmw$bus_countdown$Stops_State$fetchNearbyStops, _p2._0, model);
 				case 'FetchStopsSuccess':
-					return A2(_tjmw$bus_countdown$Stops_State$updateStops, _p2._0, model);
+					return A2(
+						_tjmw$bus_countdown$Stops_State$updateStops,
+						_p2._0,
+						_tjmw$bus_countdown$Loading$toggleLoading(model));
 				case 'FetchStopsError':
 					return A2(_tjmw$bus_countdown$Stops_State$handleFetchStopsError, _p2._0, model);
 				default:
@@ -23224,7 +23234,17 @@
 					_1: {ctor: '[]'}
 				}
 			});
-		return {ctor: '_Tuple2', _0: _tjmw$bus_countdown$Model$emptyModel, _1: cmd};
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					naptanId: '',
+					predictions: _elm_lang$core$Dict$empty,
+					possibleStops: {ctor: '[]'}
+				}),
+			_1: cmd
+		};
 	};
 	var _tjmw$bus_countdown$Main$handlePredictionsUpdate = F2(
 		function (newPredictionsJson, model) {
@@ -23274,10 +23294,14 @@
 				case 'NoOp':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'RequestGeoLocation':
-					return _tjmw$bus_countdown$Main$resetApp(model);
+					return _tjmw$bus_countdown$Main$resetApp(
+						_tjmw$bus_countdown$Loading$toggleLoading(model));
 				case 'StopsMsg':
 					if (_p2._0.ctor === 'SelectStop') {
-						return A2(_tjmw$bus_countdown$Main$selectStop, _p2._0._0, model);
+						return A2(
+							_tjmw$bus_countdown$Main$selectStop,
+							_p2._0._0,
+							_tjmw$bus_countdown$Loading$toggleLoading(model));
 					} else {
 						var _p3 = A2(_tjmw$bus_countdown$Stops_State$update, _p2._0, model);
 						var newModel = _p3._0;
@@ -23289,7 +23313,10 @@
 						};
 					}
 				case 'InitialPredictionsSuccess':
-					return A2(_tjmw$bus_countdown$Main$handlePredictions, _p2._0, model);
+					return A2(
+						_tjmw$bus_countdown$Main$handlePredictions,
+						_p2._0,
+						_tjmw$bus_countdown$Loading$toggleLoading(model));
 				case 'InitialPredictionsError':
 					return A2(_tjmw$bus_countdown$Main$handlePredictionsError, _p2._0, model);
 				case 'Predictions':
@@ -23424,7 +23451,14 @@
 			});
 	};
 	var _tjmw$bus_countdown$Main$view = function (model) {
-		return A2(
+		return model.loading ? A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Loading...'),
+				_1: {ctor: '[]'}
+			}) : A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
