@@ -60,6 +60,10 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	if (!window.location.host.match(/^localhost/) && window.location.protocol != "https:") {
+	  window.location.protocol = "https:";
+	}
+
 	var elmDiv = document.querySelector("#main");
 	var elmApp = _Main2.default.Main.embed(elmDiv);
 
