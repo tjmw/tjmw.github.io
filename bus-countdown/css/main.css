@@ -7,6 +7,8 @@
 
 table {
   margin: 2em 0;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .clickable-table tr:hover {

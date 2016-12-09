@@ -23110,9 +23110,13 @@
 				_0: _elm_lang$html$Html_Attributes$class('stop'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_tjmw$bus_countdown$Stops_State$SelectStop(stop.naptanId)),
-					_1: {ctor: '[]'}
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-naptan-id', stop.naptanId),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_tjmw$bus_countdown$Stops_State$SelectStop(stop.naptanId)),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{
@@ -23122,7 +23126,7 @@
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(stop.naptanId),
+						_0: _elm_lang$html$Html$text(stop.indicator),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -23132,21 +23136,10 @@
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(stop.indicator),
+							_0: _elm_lang$html$Html$text(stop.commonName),
 							_1: {ctor: '[]'}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$td,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(stop.commonName),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			});
 	};
@@ -23339,7 +23332,18 @@
 	var _tjmw$bus_countdown$Main$renderPrediction = function (prediction) {
 		return A2(
 			_elm_lang$html$Html$tr,
-			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html_Attributes$attribute,
+					'data-ttl',
+					_elm_lang$core$Basics$toString(prediction.timeToLive)),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-vehicle-id', prediction.vehicleId),
+					_1: {ctor: '[]'}
+				}
+			},
 			{
 				ctor: '::',
 				_0: A2(
@@ -23371,30 +23375,7 @@
 									_tjmw$bus_countdown$Main$formatTime(prediction.timeToStation)),
 								_1: {ctor: '[]'}
 							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$td,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(prediction.vehicleId),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$td,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_tjmw$bus_countdown$Main$formatDate(prediction.timeToLive)),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}
+						_1: {ctor: '[]'}
 					}
 				}
 			});
