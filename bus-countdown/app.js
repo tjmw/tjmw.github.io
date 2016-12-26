@@ -23270,10 +23270,12 @@
 		}
 	};
 	var _tjmw$bus_countdown$Main$formatTowardsDirection = function (stop) {
-		return A2(
-			_elm_lang$core$Maybe$withDefault,
-			'',
-			_tjmw$bus_countdown$Stop$towardsDirection(stop));
+		var _p4 = _tjmw$bus_countdown$Stop$towardsDirection(stop);
+		if (_p4.ctor === 'Just') {
+			return A2(_elm_lang$core$Basics_ops['++'], 'Towards ', _p4._0);
+		} else {
+			return '';
+		}
 	};
 	var _tjmw$bus_countdown$Main$renderLine = function (line) {
 		return A2(
@@ -23369,12 +23371,12 @@
 		return {ctor: 'InitialPredictionsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handlePredictionsResponse = function (result) {
-		var _p4 = result;
-		if (_p4.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p4._0);
+		var _p5 = result;
+		if (_p5.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p5._0);
 		} else {
 			return _tjmw$bus_countdown$Main$InitialPredictionsError(
-				_elm_lang$core$Basics$toString(_p4._0));
+				_elm_lang$core$Basics$toString(_p5._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$selectStop = F2(
@@ -23524,12 +23526,12 @@
 		return {ctor: 'FetchStopsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handleStopsResponse = function (result) {
-		var _p5 = result;
-		if (_p5.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p5._0);
+		var _p6 = result;
+		if (_p6.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p6._0);
 		} else {
 			return _tjmw$bus_countdown$Main$FetchStopsError(
-				_elm_lang$core$Basics$toString(_p5._0));
+				_elm_lang$core$Basics$toString(_p6._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$fetchNearbyStops = F2(
@@ -23559,8 +23561,8 @@
 		});
 	var _tjmw$bus_countdown$Main$update = F2(
 		function (msg, model) {
-			var _p6 = msg;
-			switch (_p6.ctor) {
+			var _p7 = msg;
+			switch (_p7.ctor) {
 				case 'NoOp':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'RequestGeoLocation':
@@ -23569,40 +23571,40 @@
 				case 'GeoLocation':
 					return A2(
 						_tjmw$bus_countdown$Main$fetchNearbyStops,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingStops, model));
 				case 'FetchStopsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$updateStops,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				case 'FetchStopsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handleFetchStopsError,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'SelectStop':
 					return A2(
 						_tjmw$bus_countdown$Main$selectStop,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingPredictions, model));
 				case 'InitialPredictionsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictions,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingPredictions, model));
 				case 'InitialPredictionsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictionsError,
-						_p6._0,
+						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'Predictions':
-					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p6._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p7._0, model);
 				case 'BackToStops':
 					return _tjmw$bus_countdown$Main$resetSelectedStop(
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				default:
-					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p6._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p7._0, model);
 			}
 		});
 	var _tjmw$bus_countdown$Main$GeoLocation = function (a) {
@@ -23677,8 +23679,8 @@
 			});
 	};
 	var _tjmw$bus_countdown$Main$view = function (model) {
-		var _p7 = model.state;
-		switch (_p7.ctor) {
+		var _p8 = model.state;
+		switch (_p8.ctor) {
 			case 'LoadingStops':
 				return _tjmw$bus_countdown$Main$renderLoading;
 			case 'LoadingPredictions':
