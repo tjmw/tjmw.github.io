@@ -96,14 +96,9 @@
 	elmApp.ports.requestGeoLocation.subscribe(function () {
 	  if ("geolocation" in navigator) {
 	    navigator.geolocation.getCurrentPosition(function (position) {
-	      //const geoLocation = {
-	      //lat: position.coords.latitude,
-	      //long: position.coords.longitude
-	      //}
-
 	      var geoLocation = {
-	        lat: 51.5628764,
-	        long: -0.136753
+	        lat: position.coords.latitude,
+	        long: position.coords.longitude
 	      };
 
 	      console.log(geoLocation);
