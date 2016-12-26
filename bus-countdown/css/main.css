@@ -50,3 +50,16 @@
 .stop-compass-direction {
   margin-left: 0.25em;
 }
+
+.line {
+  background-color: #CA3C3C;
+  color: #FFFFFF;
+  display: inline-block;
+  font-size: 0.25em;
+  margin-right: 0.25em;
+  padding: 0.25em;
+}
+
+.line:last-of-type {
+  margin-right: 0;
+}

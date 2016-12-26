@@ -96,9 +96,14 @@
 	elmApp.ports.requestGeoLocation.subscribe(function () {
 	  if ("geolocation" in navigator) {
 	    navigator.geolocation.getCurrentPosition(function (position) {
+	      //const geoLocation = {
+	      //lat: position.coords.latitude,
+	      //long: position.coords.longitude
+	      //}
+
 	      var geoLocation = {
-	        lat: position.coords.latitude,
-	        long: position.coords.longitude
+	        lat: 51.5628764,
+	        long: -0.136753
 	      };
 
 	      console.log(geoLocation);
@@ -22855,6 +22860,10 @@
 		}
 	};
 
+	var _tjmw$bus_countdown$Line$Line = function (a) {
+		return {name: a};
+	};
+
 	var _tjmw$bus_countdown$Prediction$secondsToMinutes = function (seconds) {
 		return (seconds / 60) | 0;
 	};
@@ -22892,9 +22901,9 @@
 				},
 				A2(_elm_lang$core$List$filter, _tjmw$bus_countdown$Stop$towardsDirectionFilter, stop.properties)));
 	};
-	var _tjmw$bus_countdown$Stop$Stop = F4(
-		function (a, b, c, d) {
-			return {naptanId: a, commonName: b, indicator: c, properties: d};
+	var _tjmw$bus_countdown$Stop$Stop = F5(
+		function (a, b, c, d, e) {
+			return {naptanId: a, commonName: b, indicator: c, properties: d, lines: e};
 		});
 
 	var _tjmw$bus_countdown$Model$Model = F4(
@@ -23024,6 +23033,11 @@
 		return {stopPoints: a};
 	};
 
+	var _tjmw$bus_countdown$StopPointsDecoder$lineDecoder = A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'name',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$Line$Line));
 	var _tjmw$bus_countdown$StopPointsDecoder$stopPropertyDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'value',
@@ -23039,21 +23053,25 @@
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$StopProperty$StopProperty))));
 	var _tjmw$bus_countdown$StopPointsDecoder$stopPointDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'additionalProperties',
-		_elm_lang$core$Json_Decode$list(_tjmw$bus_countdown$StopPointsDecoder$stopPropertyDecoder),
+		'lines',
+		_elm_lang$core$Json_Decode$list(_tjmw$bus_countdown$StopPointsDecoder$lineDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'indicator',
-			_elm_lang$core$Json_Decode$string,
+			'additionalProperties',
+			_elm_lang$core$Json_Decode$list(_tjmw$bus_countdown$StopPointsDecoder$stopPropertyDecoder),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'commonName',
+				'indicator',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'naptanId',
+					'commonName',
 					_elm_lang$core$Json_Decode$string,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$Stop$Stop)))));
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'naptanId',
+						_elm_lang$core$Json_Decode$string,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$Stop$Stop))))));
 	var _tjmw$bus_countdown$StopPointsDecoder$stopPointsDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'stopPoints',
@@ -23240,7 +23258,7 @@
 				}
 			});
 	};
-	var _tjmw$bus_countdown$Main$renderCompassDirection = function (stop) {
+	var _tjmw$bus_countdown$Main$formatCompassDirection = function (stop) {
 		var _p3 = _tjmw$bus_countdown$Stop$compassDirection(stop);
 		if (_p3.ctor === 'Just') {
 			return A2(
@@ -23251,11 +23269,28 @@
 			return '';
 		}
 	};
-	var _tjmw$bus_countdown$Main$renderTowardsDirection = function (stop) {
+	var _tjmw$bus_countdown$Main$formatTowardsDirection = function (stop) {
 		return A2(
 			_elm_lang$core$Maybe$withDefault,
 			'',
 			_tjmw$bus_countdown$Stop$towardsDirection(stop));
+	};
+	var _tjmw$bus_countdown$Main$renderLine = function (line) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('line'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(line.name),
+				_1: {ctor: '[]'}
+			});
+	};
+	var _tjmw$bus_countdown$Main$renderLines = function (listOfLines) {
+		return A2(_elm_lang$core$List$map, _tjmw$bus_countdown$Main$renderLine, listOfLines);
 	};
 	var _tjmw$bus_countdown$Main$renderLoading = A2(
 		_elm_lang$html$Html$div,
@@ -23397,7 +23432,11 @@
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$td,
-						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('stop-data'),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text(stop.commonName),
@@ -23422,7 +23461,7 @@
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
-													_tjmw$bus_countdown$Main$renderTowardsDirection(stop)),
+													_tjmw$bus_countdown$Main$formatTowardsDirection(stop)),
 												_1: {ctor: '[]'}
 											}),
 										_1: {
@@ -23437,13 +23476,24 @@
 												{
 													ctor: '::',
 													_0: _elm_lang$html$Html$text(
-														_tjmw$bus_countdown$Main$renderCompassDirection(stop)),
+														_tjmw$bus_countdown$Main$formatCompassDirection(stop)),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
 										}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('lines'),
+											_1: {ctor: '[]'}
+										},
+										_tjmw$bus_countdown$Main$renderLines(stop.lines)),
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					_1: {ctor: '[]'}
