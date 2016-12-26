@@ -5,8 +5,11 @@
   color: #354B5E;
 }
 
-table {
+.content {
   margin: 2em 0;
+}
+
+.content table {
   table-layout: fixed;
   width: 100%;
 }

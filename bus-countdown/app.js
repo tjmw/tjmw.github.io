@@ -22870,20 +22870,21 @@
 
 	var _tjmw$bus_countdown$Model$Model = F4(
 		function (a, b, c, d) {
-			return {naptanId: a, predictions: b, possibleStops: c, loading: d};
+			return {naptanId: a, predictions: b, possibleStops: c, state: d};
 		});
+	var _tjmw$bus_countdown$Model$ShowingPredictions = {ctor: 'ShowingPredictions'};
+	var _tjmw$bus_countdown$Model$LoadingPredictions = {ctor: 'LoadingPredictions'};
+	var _tjmw$bus_countdown$Model$ShowingStops = {ctor: 'ShowingStops'};
+	var _tjmw$bus_countdown$Model$LoadingStops = {ctor: 'LoadingStops'};
+	var _tjmw$bus_countdown$Model$FetchingGeoLocation = {ctor: 'FetchingGeoLocation'};
+	var _tjmw$bus_countdown$Model$Error = {ctor: 'Error'};
+	var _tjmw$bus_countdown$Model$Initial = {ctor: 'Initial'};
 	var _tjmw$bus_countdown$Model$emptyModel = A4(
 		_tjmw$bus_countdown$Model$Model,
 		'',
 		_elm_lang$core$Dict$empty,
 		{ctor: '[]'},
-		false);
-
-	var _tjmw$bus_countdown$Loading$toggleLoading = function (model) {
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{loading: !model.loading});
-	};
+		_tjmw$bus_countdown$Model$Initial);
 
 	var _tjmw$bus_countdown$Ports$registerForLivePredictions = _elm_lang$core$Native_Platform.outgoingPort(
 		'registerForLivePredictions',
@@ -23013,178 +23014,7 @@
 		_elm_lang$core$Json_Decode$list(_tjmw$bus_countdown$StopPointsDecoder$stopPointDecoder),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$StopsDocument$StopsDocument));
 
-	var _tjmw$bus_countdown$Stops_State$handleFetchStopsError = F2(
-		function (message, model) {
-			var _p0 = A2(_elm_lang$core$Debug$log, 'error', message);
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		});
-	var _tjmw$bus_countdown$Stops_State$updateStops = F2(
-		function (stopsDocument, model) {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{possibleStops: stopsDocument.stopPoints}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		});
-	var _tjmw$bus_countdown$Stops_State$SelectStop = function (a) {
-		return {ctor: 'SelectStop', _0: a};
-	};
-	var _tjmw$bus_countdown$Stops_State$FetchStopsSuccess = function (a) {
-		return {ctor: 'FetchStopsSuccess', _0: a};
-	};
-	var _tjmw$bus_countdown$Stops_State$FetchStopsError = function (a) {
-		return {ctor: 'FetchStopsError', _0: a};
-	};
-	var _tjmw$bus_countdown$Stops_State$handleStopsResponse = function (result) {
-		var _p1 = result;
-		if (_p1.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Stops_State$FetchStopsSuccess(_p1._0);
-		} else {
-			return _tjmw$bus_countdown$Stops_State$FetchStopsError(
-				_elm_lang$core$Basics$toString(_p1._0));
-		}
-	};
-	var _tjmw$bus_countdown$Stops_State$fetchNearbyStops = F2(
-		function (geoLocationJson, model) {
-			var geoLocation = _tjmw$bus_countdown$GeoLocationDecoder$decodeGeoLocation(geoLocationJson);
-			var url = A2(
-				_elm_lang$core$Basics_ops['++'],
-				'https://api.tfl.gov.uk/StopPoint?lat=',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(geoLocation.lat),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'&lon=',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(geoLocation.$long),
-							'&stopTypes=NaptanPublicBusCoachTram&radius=200&useStopPointHierarchy=True&returnLines=True&app_id=&app_key=&modes=bus'))));
-			return {
-				ctor: '_Tuple2',
-				_0: model,
-				_1: A2(
-					_elm_lang$http$Http$send,
-					_tjmw$bus_countdown$Stops_State$handleStopsResponse,
-					A2(_elm_lang$http$Http$get, url, _tjmw$bus_countdown$StopPointsDecoder$stopPointsDecoder))
-			};
-		});
-	var _tjmw$bus_countdown$Stops_State$update = F2(
-		function (msg, model) {
-			var _p2 = msg;
-			switch (_p2.ctor) {
-				case 'GeoLocation':
-					return A2(_tjmw$bus_countdown$Stops_State$fetchNearbyStops, _p2._0, model);
-				case 'FetchStopsSuccess':
-					return A2(
-						_tjmw$bus_countdown$Stops_State$updateStops,
-						_p2._0,
-						_tjmw$bus_countdown$Loading$toggleLoading(model));
-				case 'FetchStopsError':
-					return A2(_tjmw$bus_countdown$Stops_State$handleFetchStopsError, _p2._0, model);
-				default:
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
-		});
-	var _tjmw$bus_countdown$Stops_State$GeoLocation = function (a) {
-		return {ctor: 'GeoLocation', _0: a};
-	};
-	var _tjmw$bus_countdown$Stops_State$subscriptions = _tjmw$bus_countdown$Ports$geoLocation(_tjmw$bus_countdown$Stops_State$GeoLocation);
-
-	var _tjmw$bus_countdown$State$PruneExpiredPredictions = function (a) {
-		return {ctor: 'PruneExpiredPredictions', _0: a};
-	};
-	var _tjmw$bus_countdown$State$BackToStops = {ctor: 'BackToStops'};
-	var _tjmw$bus_countdown$State$Predictions = function (a) {
-		return {ctor: 'Predictions', _0: a};
-	};
-	var _tjmw$bus_countdown$State$InitialPredictionsSuccess = function (a) {
-		return {ctor: 'InitialPredictionsSuccess', _0: a};
-	};
-	var _tjmw$bus_countdown$State$InitialPredictionsError = function (a) {
-		return {ctor: 'InitialPredictionsError', _0: a};
-	};
-	var _tjmw$bus_countdown$State$StopsMsg = function (a) {
-		return {ctor: 'StopsMsg', _0: a};
-	};
-	var _tjmw$bus_countdown$State$RequestGeoLocation = {ctor: 'RequestGeoLocation'};
-	var _tjmw$bus_countdown$State$NoOp = {ctor: 'NoOp'};
-
-	var _tjmw$bus_countdown$Stops_View$renderStop = function (stop) {
-		return A2(
-			_elm_lang$html$Html$tr,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('stop'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-naptan-id', stop.naptanId),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_tjmw$bus_countdown$Stops_State$SelectStop(stop.naptanId)),
-						_1: {ctor: '[]'}
-					}
-				}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$td,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(stop.indicator),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$td,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(stop.commonName),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	};
-	var _tjmw$bus_countdown$Stops_View$renderStops = function (model) {
-		return A2(
-			_elm_lang$html$Html$table,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('pure-table pure-table-horizontal clickable-table'),
-				_1: {ctor: '[]'}
-			},
-			A2(_elm_lang$core$List$map, _tjmw$bus_countdown$Stops_View$renderStop, model.possibleStops));
-	};
-	var _tjmw$bus_countdown$Stops_View$view = function (model) {
-		return _tjmw$bus_countdown$Stops_View$renderStops(model);
-	};
-
 	var _tjmw$bus_countdown$Main$pruneInterval = 5 * _elm_lang$core$Time$second;
-	var _tjmw$bus_countdown$Main$subscriptions = function (model) {
-		var stopSubscriptions = _tjmw$bus_countdown$Stops_State$subscriptions;
-		return _elm_lang$core$Platform_Sub$batch(
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$core$Platform_Sub$map, _tjmw$bus_countdown$State$StopsMsg, stopSubscriptions),
-				_1: {
-					ctor: '::',
-					_0: _tjmw$bus_countdown$Ports$predictions(_tjmw$bus_countdown$State$Predictions),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$core$Time$every, _tjmw$bus_countdown$Main$pruneInterval, _tjmw$bus_countdown$State$PruneExpiredPredictions),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	};
 	var _tjmw$bus_countdown$Main$handlePruneExpiredPredictions = F2(
 		function (timeNow, model) {
 			var prunedPredictions = A2(
@@ -23204,15 +23034,6 @@
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		});
-	var _tjmw$bus_countdown$Main$handlePredictionsResponse = function (result) {
-		var _p0 = result;
-		if (_p0.ctor === 'Ok') {
-			return _tjmw$bus_countdown$State$InitialPredictionsSuccess(_p0._0);
-		} else {
-			return _tjmw$bus_countdown$State$InitialPredictionsError(
-				_elm_lang$core$Basics$toString(_p0._0));
-		}
-	};
 	var _tjmw$bus_countdown$Main$resetSelectedStop = function (model) {
 		return {
 			ctor: '_Tuple2',
@@ -23222,7 +23043,7 @@
 			_1: _tjmw$bus_countdown$Ports$deregisterFromLivePredictions(model.naptanId)
 		};
 	};
-	var _tjmw$bus_countdown$Main$resetApp = function (model) {
+	var _tjmw$bus_countdown$Main$initialSubs = function (model) {
 		var unsubscribeCmd = (!_elm_lang$core$Native_Utils.eq(model.naptanId, '')) ? _tjmw$bus_countdown$Ports$deregisterFromLivePredictions(model.naptanId) : _elm_lang$core$Platform_Cmd$none;
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			{
@@ -23234,17 +23055,7 @@
 					_1: {ctor: '[]'}
 				}
 			});
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					naptanId: '',
-					predictions: _elm_lang$core$Dict$empty,
-					possibleStops: {ctor: '[]'}
-				}),
-			_1: cmd
-		};
+		return {ctor: '_Tuple2', _0: model, _1: cmd};
 	};
 	var _tjmw$bus_countdown$Main$handlePredictionsUpdate = F2(
 		function (newPredictionsJson, model) {
@@ -23259,7 +23070,7 @@
 		});
 	var _tjmw$bus_countdown$Main$handlePredictionsError = F2(
 		function (message, model) {
-			var _p1 = A2(_elm_lang$core$Debug$log, 'Predictions request failed', message);
+			var _p0 = A2(_elm_lang$core$Debug$log, 'Predictions request failed', message);
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		});
 	var _tjmw$bus_countdown$Main$handlePredictions = F2(
@@ -23270,62 +23081,26 @@
 				_1: _tjmw$bus_countdown$Ports$registerForLivePredictions(model.naptanId)
 			};
 		});
-	var _tjmw$bus_countdown$Main$selectStop = F2(
-		function (newNaptanId, model) {
-			var url = A2(
-				_elm_lang$core$Basics_ops['++'],
-				'https://api.tfl.gov.uk/StopPoint/',
-				A2(_elm_lang$core$Basics_ops['++'], newNaptanId, '/Arrivals?mode=bus'));
+	var _tjmw$bus_countdown$Main$handleFetchStopsError = F2(
+		function (message, model) {
+			var _p1 = A2(_elm_lang$core$Debug$log, 'error', message);
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		});
+	var _tjmw$bus_countdown$Main$updateStops = F2(
+		function (stopsDocument, model) {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{naptanId: newNaptanId}),
-				_1: A2(
-					_elm_lang$http$Http$send,
-					_tjmw$bus_countdown$Main$handlePredictionsResponse,
-					A2(_elm_lang$http$Http$get, url, _tjmw$bus_countdown$PredictionDecoder$initialPredictionsDecoder))
+					{possibleStops: stopsDocument.stopPoints}),
+				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		});
-	var _tjmw$bus_countdown$Main$update = F2(
-		function (msg, model) {
-			var _p2 = msg;
-			switch (_p2.ctor) {
-				case 'NoOp':
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				case 'RequestGeoLocation':
-					return _tjmw$bus_countdown$Main$resetApp(
-						_tjmw$bus_countdown$Loading$toggleLoading(model));
-				case 'StopsMsg':
-					if (_p2._0.ctor === 'SelectStop') {
-						return A2(
-							_tjmw$bus_countdown$Main$selectStop,
-							_p2._0._0,
-							_tjmw$bus_countdown$Loading$toggleLoading(model));
-					} else {
-						var _p3 = A2(_tjmw$bus_countdown$Stops_State$update, _p2._0, model);
-						var newModel = _p3._0;
-						var newStopsCommand = _p3._1;
-						return {
-							ctor: '_Tuple2',
-							_0: newModel,
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _tjmw$bus_countdown$State$StopsMsg, newStopsCommand)
-						};
-					}
-				case 'InitialPredictionsSuccess':
-					return A2(
-						_tjmw$bus_countdown$Main$handlePredictions,
-						_p2._0,
-						_tjmw$bus_countdown$Loading$toggleLoading(model));
-				case 'InitialPredictionsError':
-					return A2(_tjmw$bus_countdown$Main$handlePredictionsError, _p2._0, model);
-				case 'Predictions':
-					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p2._0, model);
-				case 'BackToStops':
-					return _tjmw$bus_countdown$Main$resetSelectedStop(model);
-				default:
-					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p2._0, model);
-			}
+	var _tjmw$bus_countdown$Main$setState = F2(
+		function (newState, model) {
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{state: newState});
 		});
 	var _tjmw$bus_countdown$Main$formatDate = function (date) {
 		return A2(
@@ -23340,8 +23115,8 @@
 	};
 	var _tjmw$bus_countdown$Main$formatTime = function (seconds) {
 		var minutes = _tjmw$bus_countdown$Prediction$secondsToMinutes(seconds);
-		var _p4 = minutes;
-		switch (_p4) {
+		var _p2 = minutes;
+		switch (_p2) {
 			case 0:
 				return 'due';
 			case 1:
@@ -23407,6 +23182,19 @@
 				}
 			});
 	};
+	var _tjmw$bus_countdown$Main$renderLoading = A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Loading...'),
+			_1: {ctor: '[]'}
+		});
+	var _tjmw$bus_countdown$Main$init = {ctor: '_Tuple2', _0: _tjmw$bus_countdown$Model$emptyModel, _1: _elm_lang$core$Platform_Cmd$none};
+	var _tjmw$bus_countdown$Main$PruneExpiredPredictions = function (a) {
+		return {ctor: 'PruneExpiredPredictions', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$BackToStops = {ctor: 'BackToStops'};
 	var _tjmw$bus_countdown$Main$renderBackToStops = A2(
 		_elm_lang$html$Html$div,
 		{
@@ -23414,7 +23202,7 @@
 			_0: _elm_lang$html$Html_Attributes$class('pure-button'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$State$BackToStops),
+				_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$Main$BackToStops),
 				_1: {ctor: '[]'}
 			}
 		},
@@ -23430,7 +23218,14 @@
 				return _.timeToStation;
 			},
 			_elm_lang$core$Dict$values(model.predictions));
-		return A2(
+		return _elm_lang$core$List$isEmpty(sortedPredictions) ? A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('No predicted arrivals'),
+				_1: {ctor: '[]'}
+			}) : A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
@@ -23450,15 +23245,212 @@
 				}
 			});
 	};
-	var _tjmw$bus_countdown$Main$view = function (model) {
-		return model.loading ? A2(
+	var _tjmw$bus_countdown$Main$Predictions = function (a) {
+		return {ctor: 'Predictions', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$InitialPredictionsSuccess = function (a) {
+		return {ctor: 'InitialPredictionsSuccess', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$InitialPredictionsError = function (a) {
+		return {ctor: 'InitialPredictionsError', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$handlePredictionsResponse = function (result) {
+		var _p3 = result;
+		if (_p3.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p3._0);
+		} else {
+			return _tjmw$bus_countdown$Main$InitialPredictionsError(
+				_elm_lang$core$Basics$toString(_p3._0));
+		}
+	};
+	var _tjmw$bus_countdown$Main$selectStop = F2(
+		function (newNaptanId, model) {
+			var url = A2(
+				_elm_lang$core$Basics_ops['++'],
+				'https://api.tfl.gov.uk/StopPoint/',
+				A2(_elm_lang$core$Basics_ops['++'], newNaptanId, '/Arrivals?mode=bus'));
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{naptanId: newNaptanId}),
+				_1: A2(
+					_elm_lang$http$Http$send,
+					_tjmw$bus_countdown$Main$handlePredictionsResponse,
+					A2(_elm_lang$http$Http$get, url, _tjmw$bus_countdown$PredictionDecoder$initialPredictionsDecoder))
+			};
+		});
+	var _tjmw$bus_countdown$Main$SelectStop = function (a) {
+		return {ctor: 'SelectStop', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$renderStop = function (stop) {
+		return A2(
+			_elm_lang$html$Html$tr,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('stop'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-naptan-id', stop.naptanId),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_tjmw$bus_countdown$Main$SelectStop(stop.naptanId)),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$td,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(stop.indicator),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(stop.commonName),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	};
+	var _tjmw$bus_countdown$Main$renderStops = function (model) {
+		return _elm_lang$core$List$isEmpty(model.possibleStops) ? A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Loading...'),
+				_0: _elm_lang$html$Html$text('No stops found'),
 				_1: {ctor: '[]'}
 			}) : A2(
+			_elm_lang$html$Html$table,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('pure-table pure-table-horizontal clickable-table'),
+				_1: {ctor: '[]'}
+			},
+			A2(_elm_lang$core$List$map, _tjmw$bus_countdown$Main$renderStop, model.possibleStops));
+	};
+	var _tjmw$bus_countdown$Main$FetchStopsSuccess = function (a) {
+		return {ctor: 'FetchStopsSuccess', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$FetchStopsError = function (a) {
+		return {ctor: 'FetchStopsError', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$handleStopsResponse = function (result) {
+		var _p4 = result;
+		if (_p4.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p4._0);
+		} else {
+			return _tjmw$bus_countdown$Main$FetchStopsError(
+				_elm_lang$core$Basics$toString(_p4._0));
+		}
+	};
+	var _tjmw$bus_countdown$Main$fetchNearbyStops = F2(
+		function (geoLocationJson, model) {
+			var geoLocation = _tjmw$bus_countdown$GeoLocationDecoder$decodeGeoLocation(geoLocationJson);
+			var url = A2(
+				_elm_lang$core$Basics_ops['++'],
+				'https://api.tfl.gov.uk/StopPoint?lat=',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(geoLocation.lat),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'&lon=',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(geoLocation.$long),
+							'&stopTypes=NaptanPublicBusCoachTram&radius=200&useStopPointHierarchy=True&returnLines=True&app_id=&app_key=&modes=bus'))));
+			return {
+				ctor: '_Tuple2',
+				_0: model,
+				_1: A2(
+					_elm_lang$http$Http$send,
+					_tjmw$bus_countdown$Main$handleStopsResponse,
+					A2(_elm_lang$http$Http$get, url, _tjmw$bus_countdown$StopPointsDecoder$stopPointsDecoder))
+			};
+		});
+	var _tjmw$bus_countdown$Main$update = F2(
+		function (msg, model) {
+			var _p5 = msg;
+			switch (_p5.ctor) {
+				case 'NoOp':
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				case 'RequestGeoLocation':
+					return _tjmw$bus_countdown$Main$initialSubs(
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$FetchingGeoLocation, _tjmw$bus_countdown$Model$emptyModel));
+				case 'GeoLocation':
+					return A2(
+						_tjmw$bus_countdown$Main$fetchNearbyStops,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingStops, model));
+				case 'FetchStopsSuccess':
+					return A2(
+						_tjmw$bus_countdown$Main$updateStops,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
+				case 'FetchStopsError':
+					return A2(
+						_tjmw$bus_countdown$Main$handleFetchStopsError,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
+				case 'SelectStop':
+					return A2(
+						_tjmw$bus_countdown$Main$selectStop,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingPredictions, model));
+				case 'InitialPredictionsSuccess':
+					return A2(
+						_tjmw$bus_countdown$Main$handlePredictions,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingPredictions, model));
+				case 'InitialPredictionsError':
+					return A2(
+						_tjmw$bus_countdown$Main$handlePredictionsError,
+						_p5._0,
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
+				case 'Predictions':
+					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p5._0, model);
+				case 'BackToStops':
+					return _tjmw$bus_countdown$Main$resetSelectedStop(
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
+				default:
+					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p5._0, model);
+			}
+		});
+	var _tjmw$bus_countdown$Main$GeoLocation = function (a) {
+		return {ctor: 'GeoLocation', _0: a};
+	};
+	var _tjmw$bus_countdown$Main$subscriptions = function (model) {
+		return _elm_lang$core$Platform_Sub$batch(
+			{
+				ctor: '::',
+				_0: _tjmw$bus_countdown$Ports$geoLocation(_tjmw$bus_countdown$Main$GeoLocation),
+				_1: {
+					ctor: '::',
+					_0: _tjmw$bus_countdown$Ports$predictions(_tjmw$bus_countdown$Main$Predictions),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$core$Time$every, _tjmw$bus_countdown$Main$pruneInterval, _tjmw$bus_countdown$Main$PruneExpiredPredictions),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	};
+	var _tjmw$bus_countdown$Main$RequestGeoLocation = {ctor: 'RequestGeoLocation'};
+	var _tjmw$bus_countdown$Main$renderLayout = function (content) {
+		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
@@ -23479,7 +23471,7 @@
 								_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary button-large'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$State$RequestGeoLocation),
+									_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$Main$RequestGeoLocation),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -23501,21 +23493,39 @@
 						},
 						{
 							ctor: '::',
-							_0: (!_elm_lang$core$Native_Utils.eq(model.naptanId, '')) ? _tjmw$bus_countdown$Main$renderPredictions(model) : ((!_elm_lang$core$Native_Utils.eq(
-								model.possibleStops,
-								{ctor: '[]'})) ? A2(
-								_elm_lang$html$Html$map,
-								_tjmw$bus_countdown$State$StopsMsg,
-								_tjmw$bus_countdown$Stops_View$view(model)) : _elm_lang$html$Html$text('')),
+							_0: content,
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				}
 			});
 	};
-	var _tjmw$bus_countdown$Main$init = {ctor: '_Tuple2', _0: _tjmw$bus_countdown$Model$emptyModel, _1: _elm_lang$core$Platform_Cmd$none};
+	var _tjmw$bus_countdown$Main$view = function (model) {
+		var _p6 = model.state;
+		switch (_p6.ctor) {
+			case 'LoadingStops':
+				return _tjmw$bus_countdown$Main$renderLoading;
+			case 'LoadingPredictions':
+				return _tjmw$bus_countdown$Main$renderLoading;
+			case 'FetchingGeoLocation':
+				return _tjmw$bus_countdown$Main$renderLoading;
+			case 'ShowingPredictions':
+				return _tjmw$bus_countdown$Main$renderLayout(
+					_tjmw$bus_countdown$Main$renderPredictions(model));
+			case 'ShowingStops':
+				return _tjmw$bus_countdown$Main$renderLayout(
+					_tjmw$bus_countdown$Main$renderStops(model));
+			case 'Initial':
+				return _tjmw$bus_countdown$Main$renderLayout(
+					_elm_lang$html$Html$text(''));
+			default:
+				return _tjmw$bus_countdown$Main$renderLayout(
+					_elm_lang$html$Html$text('Something went wrong, please try again'));
+		}
+	};
 	var _tjmw$bus_countdown$Main$main = _elm_lang$html$Html$program(
 		{init: _tjmw$bus_countdown$Main$init, view: _tjmw$bus_countdown$Main$view, update: _tjmw$bus_countdown$Main$update, subscriptions: _tjmw$bus_countdown$Main$subscriptions})();
+	var _tjmw$bus_countdown$Main$NoOp = {ctor: 'NoOp'};
 
 	var Elm = {};
 	Elm['Main'] = Elm['Main'] || {};
