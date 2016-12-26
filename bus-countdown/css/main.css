@@ -22,3 +22,31 @@
 .button-large {
   font-size: 110%;
 }
+
+.back-button {
+  margin-top: 1em;
+}
+
+.prediction-route-number {
+  width: 20%;
+}
+
+.prediction-destination {
+  width: 50%;
+}
+
+.prediction-time {
+  width: 30%;
+}
+
+.stop-indicator {
+  width: 25%;
+}
+
+.stop-direction {
+  font-size: 0.25em;
+}
+
+.stop-compass-direction {
+  margin-left: 0.25em;
+}

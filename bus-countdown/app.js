@@ -22863,9 +22863,38 @@
 			return {lineName: a, timeToStation: b, destinationName: c, vehicleId: d, timeToLive: e};
 		});
 
-	var _tjmw$bus_countdown$Stop$Stop = F3(
+	var _tjmw$bus_countdown$StopProperty$StopProperty = F3(
 		function (a, b, c) {
-			return {naptanId: a, commonName: b, indicator: c};
+			return {category: a, key: b, value: c};
+		});
+
+	var _tjmw$bus_countdown$Stop$compassDirectionFilter = function (prop) {
+		return _elm_lang$core$Native_Utils.eq(prop.category, 'Direction') && _elm_lang$core$Native_Utils.eq(prop.key, 'CompassPoint');
+	};
+	var _tjmw$bus_countdown$Stop$compassDirection = function (stop) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$map,
+				function (_) {
+					return _.value;
+				},
+				A2(_elm_lang$core$List$filter, _tjmw$bus_countdown$Stop$compassDirectionFilter, stop.properties)));
+	};
+	var _tjmw$bus_countdown$Stop$towardsDirectionFilter = function (prop) {
+		return _elm_lang$core$Native_Utils.eq(prop.category, 'Direction') && _elm_lang$core$Native_Utils.eq(prop.key, 'Towards');
+	};
+	var _tjmw$bus_countdown$Stop$towardsDirection = function (stop) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$map,
+				function (_) {
+					return _.value;
+				},
+				A2(_elm_lang$core$List$filter, _tjmw$bus_countdown$Stop$towardsDirectionFilter, stop.properties)));
+	};
+	var _tjmw$bus_countdown$Stop$Stop = F4(
+		function (a, b, c, d) {
+			return {naptanId: a, commonName: b, indicator: c, properties: d};
 		});
 
 	var _tjmw$bus_countdown$Model$Model = F4(
@@ -22995,19 +23024,36 @@
 		return {stopPoints: a};
 	};
 
-	var _tjmw$bus_countdown$StopPointsDecoder$stopPointDecoder = A3(
+	var _tjmw$bus_countdown$StopPointsDecoder$stopPropertyDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'indicator',
+		'value',
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'commonName',
+			'key',
 			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'naptanId',
+				'category',
 				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$Stop$Stop))));
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$StopProperty$StopProperty))));
+	var _tjmw$bus_countdown$StopPointsDecoder$stopPointDecoder = A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'additionalProperties',
+		_elm_lang$core$Json_Decode$list(_tjmw$bus_countdown$StopPointsDecoder$stopPropertyDecoder),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'indicator',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'commonName',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'naptanId',
+					_elm_lang$core$Json_Decode$string,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_tjmw$bus_countdown$Stop$Stop)))));
 	var _tjmw$bus_countdown$StopPointsDecoder$stopPointsDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'stopPoints',
@@ -23150,7 +23196,11 @@
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$td,
-					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('prediction-route-number'),
+						_1: {ctor: '[]'}
+					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(prediction.lineName),
@@ -23160,7 +23210,11 @@
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$td,
-						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('prediction-destination'),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text(prediction.destinationName),
@@ -23170,7 +23224,11 @@
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$td,
-							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('prediction-time'),
+								_1: {ctor: '[]'}
+							},
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html$text(
@@ -23181,6 +23239,23 @@
 					}
 				}
 			});
+	};
+	var _tjmw$bus_countdown$Main$renderCompassDirection = function (stop) {
+		var _p3 = _tjmw$bus_countdown$Stop$compassDirection(stop);
+		if (_p3.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'(',
+				A2(_elm_lang$core$Basics_ops['++'], _p3._0, ')'));
+		} else {
+			return '';
+		}
+	};
+	var _tjmw$bus_countdown$Main$renderTowardsDirection = function (stop) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_tjmw$bus_countdown$Stop$towardsDirection(stop));
 	};
 	var _tjmw$bus_countdown$Main$renderLoading = A2(
 		_elm_lang$html$Html$div,
@@ -23202,8 +23277,12 @@
 			_0: _elm_lang$html$Html_Attributes$class('pure-button'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$Main$BackToStops),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$html$Html_Attributes$class('back-button'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_tjmw$bus_countdown$Main$BackToStops),
+					_1: {ctor: '[]'}
+				}
 			}
 		},
 		{
@@ -23255,12 +23334,12 @@
 		return {ctor: 'InitialPredictionsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handlePredictionsResponse = function (result) {
-		var _p3 = result;
-		if (_p3.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p3._0);
+		var _p4 = result;
+		if (_p4.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p4._0);
 		} else {
 			return _tjmw$bus_countdown$Main$InitialPredictionsError(
-				_elm_lang$core$Basics$toString(_p3._0));
+				_elm_lang$core$Basics$toString(_p4._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$selectStop = F2(
@@ -23304,7 +23383,11 @@
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$td,
-					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('stop-indicator'),
+						_1: {ctor: '[]'}
+					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(stop.indicator),
@@ -23318,7 +23401,50 @@
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text(stop.commonName),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('stop-direction'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('stop-towards-direction'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(
+													_tjmw$bus_countdown$Main$renderTowardsDirection(stop)),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('stop-compass-direction'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														_tjmw$bus_countdown$Main$renderCompassDirection(stop)),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {ctor: '[]'}
 				}
@@ -23348,12 +23474,12 @@
 		return {ctor: 'FetchStopsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handleStopsResponse = function (result) {
-		var _p4 = result;
-		if (_p4.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p4._0);
+		var _p5 = result;
+		if (_p5.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p5._0);
 		} else {
 			return _tjmw$bus_countdown$Main$FetchStopsError(
-				_elm_lang$core$Basics$toString(_p4._0));
+				_elm_lang$core$Basics$toString(_p5._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$fetchNearbyStops = F2(
@@ -23383,8 +23509,8 @@
 		});
 	var _tjmw$bus_countdown$Main$update = F2(
 		function (msg, model) {
-			var _p5 = msg;
-			switch (_p5.ctor) {
+			var _p6 = msg;
+			switch (_p6.ctor) {
 				case 'NoOp':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'RequestGeoLocation':
@@ -23393,40 +23519,40 @@
 				case 'GeoLocation':
 					return A2(
 						_tjmw$bus_countdown$Main$fetchNearbyStops,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingStops, model));
 				case 'FetchStopsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$updateStops,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				case 'FetchStopsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handleFetchStopsError,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'SelectStop':
 					return A2(
 						_tjmw$bus_countdown$Main$selectStop,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingPredictions, model));
 				case 'InitialPredictionsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictions,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingPredictions, model));
 				case 'InitialPredictionsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictionsError,
-						_p5._0,
+						_p6._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'Predictions':
-					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p5._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p6._0, model);
 				case 'BackToStops':
 					return _tjmw$bus_countdown$Main$resetSelectedStop(
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				default:
-					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p5._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p6._0, model);
 			}
 		});
 	var _tjmw$bus_countdown$Main$GeoLocation = function (a) {
@@ -23501,8 +23627,8 @@
 			});
 	};
 	var _tjmw$bus_countdown$Main$view = function (model) {
-		var _p6 = model.state;
-		switch (_p6.ctor) {
+		var _p7 = model.state;
+		switch (_p7.ctor) {
 			case 'LoadingStops':
 				return _tjmw$bus_countdown$Main$renderLoading;
 			case 'LoadingPredictions':
