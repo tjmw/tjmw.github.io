@@ -65,7 +65,10 @@
 	}
 
 	var elmDiv = document.querySelector("#main");
-	var elmApp = _Main2.default.Main.embed(elmDiv);
+	var elmApp = _Main2.default.Main.embed(elmDiv, {
+	  tfl_app_id: ("0ec71620"),
+	  tfl_app_key: ("c0741efa64e13af6ecc776d7adafb497")
+	});
 
 	_jquery2.default.connection.hub.url = "https://push-api.tfl.gov.uk/signalr/hubs/signalr";
 
@@ -22901,9 +22904,9 @@
 			return {naptanId: a, commonName: b, indicator: c, properties: d, lines: e};
 		});
 
-	var _tjmw$bus_countdown$Model$Model = F4(
-		function (a, b, c, d) {
-			return {naptanId: a, predictions: b, possibleStops: c, state: d};
+	var _tjmw$bus_countdown$Model$Model = F6(
+		function (a, b, c, d, e, f) {
+			return {naptanId: a, predictions: b, possibleStops: c, state: d, tfl_app_id: e, tfl_app_key: f};
 		});
 	var _tjmw$bus_countdown$Model$ShowingPredictions = {ctor: 'ShowingPredictions'};
 	var _tjmw$bus_countdown$Model$LoadingPredictions = {ctor: 'LoadingPredictions'};
@@ -22912,12 +22915,19 @@
 	var _tjmw$bus_countdown$Model$FetchingGeoLocation = {ctor: 'FetchingGeoLocation'};
 	var _tjmw$bus_countdown$Model$Error = {ctor: 'Error'};
 	var _tjmw$bus_countdown$Model$Initial = {ctor: 'Initial'};
-	var _tjmw$bus_countdown$Model$emptyModel = A4(
+	var _tjmw$bus_countdown$Model$emptyModel = A6(
 		_tjmw$bus_countdown$Model$Model,
 		'',
 		_elm_lang$core$Dict$empty,
 		{ctor: '[]'},
-		_tjmw$bus_countdown$Model$Initial);
+		_tjmw$bus_countdown$Model$Initial,
+		'',
+		'');
+	var _tjmw$bus_countdown$Model$resetModel = function (model) {
+		return _elm_lang$core$Native_Utils.update(
+			_tjmw$bus_countdown$Model$emptyModel,
+			{tfl_app_id: model.tfl_app_id, tfl_app_key: model.tfl_app_key});
+	};
 
 	var _tjmw$bus_countdown$Ports$registerForLivePredictions = _elm_lang$core$Native_Platform.outgoingPort(
 		'registerForLivePredictions',
@@ -23140,6 +23150,19 @@
 				_1: _tjmw$bus_countdown$Ports$registerForLivePredictions(model.naptanId)
 			};
 		});
+	var _tjmw$bus_countdown$Main$appendApiCreds = F2(
+		function (model, url) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				url,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'&app_id=',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						model.tfl_app_id,
+						A2(_elm_lang$core$Basics_ops['++'], '&app_key=', model.tfl_app_key))));
+		});
 	var _tjmw$bus_countdown$Main$handleFetchStopsError = F2(
 		function (message, model) {
 			var _p1 = A2(_elm_lang$core$Debug$log, 'error', message);
@@ -23297,7 +23320,19 @@
 			_0: _elm_lang$html$Html$text('Loading...'),
 			_1: {ctor: '[]'}
 		});
-	var _tjmw$bus_countdown$Main$init = {ctor: '_Tuple2', _0: _tjmw$bus_countdown$Model$emptyModel, _1: _elm_lang$core$Platform_Cmd$none};
+	var _tjmw$bus_countdown$Main$init = function (flags) {
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				_tjmw$bus_countdown$Model$emptyModel,
+				{tfl_app_id: flags.tfl_app_id, tfl_app_key: flags.tfl_app_key}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	};
+	var _tjmw$bus_countdown$Main$Flags = F2(
+		function (a, b) {
+			return {tfl_app_id: a, tfl_app_key: b};
+		});
 	var _tjmw$bus_countdown$Main$PruneExpiredPredictions = function (a) {
 		return {ctor: 'PruneExpiredPredictions', _0: a};
 	};
@@ -23376,10 +23411,15 @@
 	};
 	var _tjmw$bus_countdown$Main$selectStop = F2(
 		function (newNaptanId, model) {
-			var url = A2(
+			var qs = '?mode=bus';
+			var base_url = A2(
 				_elm_lang$core$Basics_ops['++'],
 				'https://api.tfl.gov.uk/StopPoint/',
-				A2(_elm_lang$core$Basics_ops['++'], newNaptanId, '/Arrivals?mode=bus'));
+				A2(_elm_lang$core$Basics_ops['++'], newNaptanId, '/Arrivals'));
+			var url = A2(
+				_tjmw$bus_countdown$Main$appendApiCreds,
+				model,
+				A2(_elm_lang$core$Basics_ops['++'], base_url, qs));
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -23531,10 +23571,11 @@
 	};
 	var _tjmw$bus_countdown$Main$fetchNearbyStops = F2(
 		function (geoLocationJson, model) {
+			var base_url = 'https://api.tfl.gov.uk/StopPoint';
 			var geoLocation = _tjmw$bus_countdown$GeoLocationDecoder$decodeGeoLocation(geoLocationJson);
-			var url = A2(
+			var qs = A2(
 				_elm_lang$core$Basics_ops['++'],
-				'https://api.tfl.gov.uk/StopPoint?lat=',
+				'?lat=',
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					_elm_lang$core$Basics$toString(geoLocation.lat),
@@ -23544,7 +23585,11 @@
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							_elm_lang$core$Basics$toString(geoLocation.$long),
-							'&stopTypes=NaptanPublicBusCoachTram&radius=200&useStopPointHierarchy=True&returnLines=True&app_id=&app_key=&modes=bus'))));
+							'&stopTypes=NaptanPublicBusCoachTram&radius=200&useStopPointHierarchy=True&returnLines=True&modes=bus'))));
+			var url = A2(
+				_tjmw$bus_countdown$Main$appendApiCreds,
+				model,
+				A2(_elm_lang$core$Basics_ops['++'], base_url, qs));
 			return {
 				ctor: '_Tuple2',
 				_0: model,
@@ -23562,7 +23607,10 @@
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'RequestGeoLocation':
 					return _tjmw$bus_countdown$Main$initialSubs(
-						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$FetchingGeoLocation, _tjmw$bus_countdown$Model$emptyModel));
+						A2(
+							_tjmw$bus_countdown$Main$setState,
+							_tjmw$bus_countdown$Model$FetchingGeoLocation,
+							_tjmw$bus_countdown$Model$resetModel(model)));
 				case 'GeoLocation':
 					return A2(
 						_tjmw$bus_countdown$Main$fetchNearbyStops,
@@ -23696,8 +23744,20 @@
 					_elm_lang$html$Html$text('Something went wrong, please try again'));
 		}
 	};
-	var _tjmw$bus_countdown$Main$main = _elm_lang$html$Html$program(
-		{init: _tjmw$bus_countdown$Main$init, view: _tjmw$bus_countdown$Main$view, update: _tjmw$bus_countdown$Main$update, subscriptions: _tjmw$bus_countdown$Main$subscriptions})();
+	var _tjmw$bus_countdown$Main$main = _elm_lang$html$Html$programWithFlags(
+		{init: _tjmw$bus_countdown$Main$init, view: _tjmw$bus_countdown$Main$view, update: _tjmw$bus_countdown$Main$update, subscriptions: _tjmw$bus_countdown$Main$subscriptions})(
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (tfl_app_id) {
+				return A2(
+					_elm_lang$core$Json_Decode$andThen,
+					function (tfl_app_key) {
+						return _elm_lang$core$Json_Decode$succeed(
+							{tfl_app_id: tfl_app_id, tfl_app_key: tfl_app_key});
+					},
+					A2(_elm_lang$core$Json_Decode$field, 'tfl_app_key', _elm_lang$core$Json_Decode$string));
+			},
+			A2(_elm_lang$core$Json_Decode$field, 'tfl_app_id', _elm_lang$core$Json_Decode$string)));
 	var _tjmw$bus_countdown$Main$NoOp = {ctor: 'NoOp'};
 
 	var Elm = {};
