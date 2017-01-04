@@ -97,19 +97,29 @@
 	});
 
 	elmApp.ports.requestGeoLocation.subscribe(function () {
+	  var success = function success(position) {
+	    var geoLocation = {
+	      lat: position.coords.latitude,
+	      long: position.coords.longitude
+	    };
+
+	    console.log(geoLocation);
+
+	    elmApp.ports.geoLocation.send(geoLocation);
+	  };
+
+	  var error = function error() {
+	    elmApp.ports.geoLocationUnavailable.send("");
+	  };
+
+	  var options = {
+	    timeout: 5000
+	  };
+
 	  if ("geolocation" in navigator) {
-	    navigator.geolocation.getCurrentPosition(function (position) {
-	      var geoLocation = {
-	        lat: position.coords.latitude,
-	        long: position.coords.longitude
-	      };
-
-	      console.log(geoLocation);
-
-	      elmApp.ports.geoLocation.send(geoLocation);
-	    });
+	    navigator.geolocation.getCurrentPosition(success, error, options);
 	  } else {
-	    console.log("Geo location not available");
+	    error();
 	  }
 	});
 
@@ -22912,6 +22922,7 @@
 	var _tjmw$bus_countdown$Model$LoadingPredictions = {ctor: 'LoadingPredictions'};
 	var _tjmw$bus_countdown$Model$ShowingStops = {ctor: 'ShowingStops'};
 	var _tjmw$bus_countdown$Model$LoadingStops = {ctor: 'LoadingStops'};
+	var _tjmw$bus_countdown$Model$GeoLocationError = {ctor: 'GeoLocationError'};
 	var _tjmw$bus_countdown$Model$FetchingGeoLocation = {ctor: 'FetchingGeoLocation'};
 	var _tjmw$bus_countdown$Model$Error = {ctor: 'Error'};
 	var _tjmw$bus_countdown$Model$Initial = {ctor: 'Initial'};
@@ -22946,6 +22957,7 @@
 			return v;
 		});
 	var _tjmw$bus_countdown$Ports$geoLocation = _elm_lang$core$Native_Platform.incomingPort('geoLocation', _elm_lang$core$Json_Decode$value);
+	var _tjmw$bus_countdown$Ports$geoLocationUnavailable = _elm_lang$core$Native_Platform.incomingPort('geoLocationUnavailable', _elm_lang$core$Json_Decode$string);
 
 	var _tjmw$bus_countdown$PredictionDecoder$initialPredictionDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -23312,6 +23324,14 @@
 	var _tjmw$bus_countdown$Main$renderLines = function (listOfLines) {
 		return A2(_elm_lang$core$List$map, _tjmw$bus_countdown$Main$renderLine, listOfLines);
 	};
+	var _tjmw$bus_countdown$Main$renderGeoLocationError = A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Unable to access geolocation. Please allow access and try again.'),
+			_1: {ctor: '[]'}
+		});
 	var _tjmw$bus_countdown$Main$renderLoading = A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -23616,6 +23636,11 @@
 						_tjmw$bus_countdown$Main$fetchNearbyStops,
 						_p7._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingStops, model));
+				case 'GeoLocationUnavailable':
+					return function (model_) {
+						return {ctor: '_Tuple2', _0: model_, _1: _elm_lang$core$Platform_Cmd$none};
+					}(
+						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$GeoLocationError, model));
 				case 'FetchStopsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$updateStops,
@@ -23650,6 +23675,9 @@
 					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p7._0, model);
 			}
 		});
+	var _tjmw$bus_countdown$Main$GeoLocationUnavailable = function (a) {
+		return {ctor: 'GeoLocationUnavailable', _0: a};
+	};
 	var _tjmw$bus_countdown$Main$GeoLocation = function (a) {
 		return {ctor: 'GeoLocation', _0: a};
 	};
@@ -23660,11 +23688,15 @@
 				_0: _tjmw$bus_countdown$Ports$geoLocation(_tjmw$bus_countdown$Main$GeoLocation),
 				_1: {
 					ctor: '::',
-					_0: _tjmw$bus_countdown$Ports$predictions(_tjmw$bus_countdown$Main$Predictions),
+					_0: _tjmw$bus_countdown$Ports$geoLocationUnavailable(_tjmw$bus_countdown$Main$GeoLocationUnavailable),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$core$Time$every, _tjmw$bus_countdown$Main$pruneInterval, _tjmw$bus_countdown$Main$PruneExpiredPredictions),
-						_1: {ctor: '[]'}
+						_0: _tjmw$bus_countdown$Ports$predictions(_tjmw$bus_countdown$Main$Predictions),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$core$Time$every, _tjmw$bus_countdown$Main$pruneInterval, _tjmw$bus_countdown$Main$PruneExpiredPredictions),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			});
@@ -23730,6 +23762,8 @@
 				return _tjmw$bus_countdown$Main$renderLoading;
 			case 'FetchingGeoLocation':
 				return _tjmw$bus_countdown$Main$renderLoading;
+			case 'GeoLocationError':
+				return _tjmw$bus_countdown$Main$renderLayout(_tjmw$bus_countdown$Main$renderGeoLocationError);
 			case 'ShowingPredictions':
 				return _tjmw$bus_countdown$Main$renderLayout(
 					_tjmw$bus_countdown$Main$renderPredictions(model));
