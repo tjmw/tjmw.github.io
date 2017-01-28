@@ -19909,33 +19909,48 @@
 			_elm_community$json_extra$Json_Decode_Extra$sequenceHelp(decoders),
 			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$value));
 	};
+	var _elm_community$json_extra$Json_Decode_Extra$optionalField = F2(
+		function (fieldName, decoder) {
+			var finishDecoding = function (json) {
+				var _p1 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					A2(_elm_lang$core$Json_Decode$field, fieldName, _elm_lang$core$Json_Decode$value),
+					json);
+				if (_p1.ctor === 'Ok') {
+					return A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder);
+				} else {
+					return _elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing);
+				}
+			};
+			return A2(_elm_lang$core$Json_Decode$andThen, finishDecoding, _elm_lang$core$Json_Decode$value);
+		});
 	var _elm_community$json_extra$Json_Decode_Extra$withDefault = F2(
 		function (fallback, decoder) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (_p1) {
+				function (_p2) {
 					return _elm_lang$core$Json_Decode$succeed(
-						A2(_elm_lang$core$Maybe$withDefault, fallback, _p1));
+						A2(_elm_lang$core$Maybe$withDefault, fallback, _p2));
 				},
 				_elm_lang$core$Json_Decode$maybe(decoder));
 		});
 	var _elm_community$json_extra$Json_Decode_Extra$decodeDictFromTuples = F2(
 		function (keyDecoder, tuples) {
-			var _p2 = tuples;
-			if (_p2.ctor === '[]') {
+			var _p3 = tuples;
+			if (_p3.ctor === '[]') {
 				return _elm_lang$core$Json_Decode$succeed(_elm_lang$core$Dict$empty);
 			} else {
-				var _p3 = A2(_elm_lang$core$Json_Decode$decodeString, keyDecoder, _p2._0._0);
-				if (_p3.ctor === 'Ok') {
+				var _p4 = A2(_elm_lang$core$Json_Decode$decodeString, keyDecoder, _p3._0._0);
+				if (_p4.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (_p4) {
+						function (_p5) {
 							return _elm_lang$core$Json_Decode$succeed(
-								A3(_elm_lang$core$Dict$insert, _p3._0, _p2._0._1, _p4));
+								A3(_elm_lang$core$Dict$insert, _p4._0, _p3._0._1, _p5));
 						},
-						A2(_elm_community$json_extra$Json_Decode_Extra$decodeDictFromTuples, keyDecoder, _p2._1));
+						A2(_elm_community$json_extra$Json_Decode_Extra$decodeDictFromTuples, keyDecoder, _p3._1));
 				} else {
-					return _elm_lang$core$Json_Decode$fail(_p3._0);
+					return _elm_lang$core$Json_Decode$fail(_p4._0);
 				}
 			}
 		});
@@ -19943,28 +19958,28 @@
 		function (keyDecoder, valueDecoder) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (_p5) {
+				function (_p6) {
 					return A2(
 						_elm_community$json_extra$Json_Decode_Extra$decodeDictFromTuples,
 						keyDecoder,
-						_elm_lang$core$Dict$toList(_p5));
+						_elm_lang$core$Dict$toList(_p6));
 				},
 				_elm_lang$core$Json_Decode$dict(valueDecoder));
 		});
 	var _elm_community$json_extra$Json_Decode_Extra$set = function (decoder) {
 		return A2(
 			_elm_lang$core$Json_Decode$andThen,
-			function (_p6) {
+			function (_p7) {
 				return _elm_lang$core$Json_Decode$succeed(
-					_elm_lang$core$Set$fromList(_p6));
+					_elm_lang$core$Set$fromList(_p7));
 			},
 			_elm_lang$core$Json_Decode$list(decoder));
 	};
 	var _elm_community$json_extra$Json_Decode_Extra$date = A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (_p7) {
+		function (_p8) {
 			return _elm_community$json_extra$Json_Decode_Extra$fromResult(
-				_elm_lang$core$Date$fromString(_p7));
+				_elm_lang$core$Date$fromString(_p8));
 		},
 		_elm_lang$core$Json_Decode$string);
 	var _elm_community$json_extra$Json_Decode_Extra$andMap = _elm_lang$core$Json_Decode$map2(
@@ -22872,6 +22887,15 @@
 		return {name: a};
 	};
 
+	var _tjmw$bus_countdown$NaptanId$toString = function (_p0) {
+		var _p1 = _p0;
+		return _p1._0;
+	};
+	var _tjmw$bus_countdown$NaptanId$NaptanId = function (a) {
+		return {ctor: 'NaptanId', _0: a};
+	};
+	var _tjmw$bus_countdown$NaptanId$fromString = _tjmw$bus_countdown$NaptanId$NaptanId;
+
 	var _tjmw$bus_countdown$Prediction$secondsToMinutes = function (seconds) {
 		return (seconds / 60) | 0;
 	};
@@ -22926,18 +22950,15 @@
 	var _tjmw$bus_countdown$Model$FetchingGeoLocation = {ctor: 'FetchingGeoLocation'};
 	var _tjmw$bus_countdown$Model$Error = {ctor: 'Error'};
 	var _tjmw$bus_countdown$Model$Initial = {ctor: 'Initial'};
-	var _tjmw$bus_countdown$Model$emptyModel = A6(
-		_tjmw$bus_countdown$Model$Model,
-		'',
-		_elm_lang$core$Dict$empty,
-		{ctor: '[]'},
-		_tjmw$bus_countdown$Model$Initial,
-		'',
-		'');
 	var _tjmw$bus_countdown$Model$resetModel = function (model) {
 		return _elm_lang$core$Native_Utils.update(
-			_tjmw$bus_countdown$Model$emptyModel,
-			{tfl_app_id: model.tfl_app_id, tfl_app_key: model.tfl_app_key});
+			model,
+			{
+				naptanId: _elm_lang$core$Maybe$Nothing,
+				predictions: _elm_lang$core$Dict$empty,
+				possibleStops: {ctor: '[]'},
+				state: _tjmw$bus_countdown$Model$Initial
+			});
 	};
 
 	var _tjmw$bus_countdown$Ports$registerForLivePredictions = _elm_lang$core$Native_Platform.outgoingPort(
@@ -23115,21 +23136,29 @@
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		});
+	var _tjmw$bus_countdown$Main$maybeDeregisterCmd = function (naptanId) {
+		var _p0 = naptanId;
+		if (_p0.ctor === 'Nothing') {
+			return _elm_lang$core$Platform_Cmd$none;
+		} else {
+			return _tjmw$bus_countdown$Ports$deregisterFromLivePredictions(
+				_tjmw$bus_countdown$NaptanId$toString(_p0._0));
+		}
+	};
 	var _tjmw$bus_countdown$Main$resetSelectedStop = function (model) {
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{predictions: _elm_lang$core$Dict$empty, naptanId: ''}),
-			_1: _tjmw$bus_countdown$Ports$deregisterFromLivePredictions(model.naptanId)
+				{predictions: _elm_lang$core$Dict$empty, naptanId: _elm_lang$core$Maybe$Nothing}),
+			_1: _tjmw$bus_countdown$Main$maybeDeregisterCmd(model.naptanId)
 		};
 	};
 	var _tjmw$bus_countdown$Main$initialSubs = function (model) {
-		var unsubscribeCmd = (!_elm_lang$core$Native_Utils.eq(model.naptanId, '')) ? _tjmw$bus_countdown$Ports$deregisterFromLivePredictions(model.naptanId) : _elm_lang$core$Platform_Cmd$none;
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			{
 				ctor: '::',
-				_0: unsubscribeCmd,
+				_0: _tjmw$bus_countdown$Main$maybeDeregisterCmd(model.naptanId),
 				_1: {
 					ctor: '::',
 					_0: _tjmw$bus_countdown$Ports$requestGeoLocation(''),
@@ -23151,15 +23180,24 @@
 		});
 	var _tjmw$bus_countdown$Main$handlePredictionsError = F2(
 		function (message, model) {
-			var _p0 = A2(_elm_lang$core$Debug$log, 'Predictions request failed', message);
+			var _p1 = A2(_elm_lang$core$Debug$log, 'Predictions request failed', message);
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		});
+	var _tjmw$bus_countdown$Main$maybeRegisterCmd = function (naptanId) {
+		var _p2 = naptanId;
+		if (_p2.ctor === 'Nothing') {
+			return _elm_lang$core$Platform_Cmd$none;
+		} else {
+			return _tjmw$bus_countdown$Ports$registerForLivePredictions(
+				_tjmw$bus_countdown$NaptanId$toString(_p2._0));
+		}
+	};
 	var _tjmw$bus_countdown$Main$handlePredictions = F2(
 		function (listOfPredictions, model) {
 			return {
 				ctor: '_Tuple2',
 				_0: A2(_tjmw$bus_countdown$PredictionsUpdater$updatePredictions, model, listOfPredictions),
-				_1: _tjmw$bus_countdown$Ports$registerForLivePredictions(model.naptanId)
+				_1: _tjmw$bus_countdown$Main$maybeRegisterCmd(model.naptanId)
 			};
 		});
 	var _tjmw$bus_countdown$Main$appendApiCreds = F2(
@@ -23177,7 +23215,7 @@
 		});
 	var _tjmw$bus_countdown$Main$handleFetchStopsError = F2(
 		function (message, model) {
-			var _p1 = A2(_elm_lang$core$Debug$log, 'error', message);
+			var _p3 = A2(_elm_lang$core$Debug$log, 'error', message);
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		});
 	var _tjmw$bus_countdown$Main$updateStops = F2(
@@ -23209,8 +23247,8 @@
 	};
 	var _tjmw$bus_countdown$Main$formatTime = function (seconds) {
 		var minutes = _tjmw$bus_countdown$Prediction$secondsToMinutes(seconds);
-		var _p2 = minutes;
-		switch (_p2) {
+		var _p4 = minutes;
+		switch (_p4) {
 			case 0:
 				return 'due';
 			case 1:
@@ -23289,20 +23327,20 @@
 			});
 	};
 	var _tjmw$bus_countdown$Main$formatCompassDirection = function (stop) {
-		var _p3 = _tjmw$bus_countdown$Stop$compassDirection(stop);
-		if (_p3.ctor === 'Just') {
+		var _p5 = _tjmw$bus_countdown$Stop$compassDirection(stop);
+		if (_p5.ctor === 'Just') {
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				'(',
-				A2(_elm_lang$core$Basics_ops['++'], _p3._0, ')'));
+				A2(_elm_lang$core$Basics_ops['++'], _p5._0, ')'));
 		} else {
 			return '';
 		}
 	};
 	var _tjmw$bus_countdown$Main$formatTowardsDirection = function (stop) {
-		var _p4 = _tjmw$bus_countdown$Stop$towardsDirection(stop);
-		if (_p4.ctor === 'Just') {
-			return A2(_elm_lang$core$Basics_ops['++'], 'Towards ', _p4._0);
+		var _p6 = _tjmw$bus_countdown$Stop$towardsDirection(stop);
+		if (_p6.ctor === 'Just') {
+			return A2(_elm_lang$core$Basics_ops['++'], 'Towards ', _p6._0);
 		} else {
 			return '';
 		}
@@ -23343,9 +23381,14 @@
 	var _tjmw$bus_countdown$Main$init = function (flags) {
 		return {
 			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				_tjmw$bus_countdown$Model$emptyModel,
-				{tfl_app_id: flags.tfl_app_id, tfl_app_key: flags.tfl_app_key}),
+			_0: A6(
+				_tjmw$bus_countdown$Model$Model,
+				_elm_lang$core$Maybe$Nothing,
+				_elm_lang$core$Dict$empty,
+				{ctor: '[]'},
+				_tjmw$bus_countdown$Model$Initial,
+				flags.tfl_app_id,
+				flags.tfl_app_key),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	};
@@ -23421,12 +23464,12 @@
 		return {ctor: 'InitialPredictionsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handlePredictionsResponse = function (result) {
-		var _p5 = result;
-		if (_p5.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p5._0);
+		var _p7 = result;
+		if (_p7.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$InitialPredictionsSuccess(_p7._0);
 		} else {
 			return _tjmw$bus_countdown$Main$InitialPredictionsError(
-				_elm_lang$core$Basics$toString(_p5._0));
+				_elm_lang$core$Basics$toString(_p7._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$selectStop = F2(
@@ -23444,7 +23487,10 @@
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{naptanId: newNaptanId}),
+					{
+						naptanId: _elm_lang$core$Maybe$Just(
+							_tjmw$bus_countdown$NaptanId$fromString(newNaptanId))
+					}),
 				_1: A2(
 					_elm_lang$http$Http$send,
 					_tjmw$bus_countdown$Main$handlePredictionsResponse,
@@ -23581,12 +23627,12 @@
 		return {ctor: 'FetchStopsError', _0: a};
 	};
 	var _tjmw$bus_countdown$Main$handleStopsResponse = function (result) {
-		var _p6 = result;
-		if (_p6.ctor === 'Ok') {
-			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p6._0);
+		var _p8 = result;
+		if (_p8.ctor === 'Ok') {
+			return _tjmw$bus_countdown$Main$FetchStopsSuccess(_p8._0);
 		} else {
 			return _tjmw$bus_countdown$Main$FetchStopsError(
-				_elm_lang$core$Basics$toString(_p6._0));
+				_elm_lang$core$Basics$toString(_p8._0));
 		}
 	};
 	var _tjmw$bus_countdown$Main$fetchNearbyStops = F2(
@@ -23621,8 +23667,8 @@
 		});
 	var _tjmw$bus_countdown$Main$update = F2(
 		function (msg, model) {
-			var _p7 = msg;
-			switch (_p7.ctor) {
+			var _p9 = msg;
+			switch (_p9.ctor) {
 				case 'NoOp':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'RequestGeoLocation':
@@ -23634,7 +23680,7 @@
 				case 'GeoLocation':
 					return A2(
 						_tjmw$bus_countdown$Main$fetchNearbyStops,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingStops, model));
 				case 'GeoLocationUnavailable':
 					return function (model_) {
@@ -23644,35 +23690,35 @@
 				case 'FetchStopsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$updateStops,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				case 'FetchStopsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handleFetchStopsError,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'SelectStop':
 					return A2(
 						_tjmw$bus_countdown$Main$selectStop,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$LoadingPredictions, model));
 				case 'InitialPredictionsSuccess':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictions,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingPredictions, model));
 				case 'InitialPredictionsError':
 					return A2(
 						_tjmw$bus_countdown$Main$handlePredictionsError,
-						_p7._0,
+						_p9._0,
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$Error, model));
 				case 'Predictions':
-					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p7._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePredictionsUpdate, _p9._0, model);
 				case 'BackToStops':
 					return _tjmw$bus_countdown$Main$resetSelectedStop(
 						A2(_tjmw$bus_countdown$Main$setState, _tjmw$bus_countdown$Model$ShowingStops, model));
 				default:
-					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p7._0, model);
+					return A2(_tjmw$bus_countdown$Main$handlePruneExpiredPredictions, _p9._0, model);
 			}
 		});
 	var _tjmw$bus_countdown$Main$GeoLocationUnavailable = function (a) {
@@ -23754,8 +23800,8 @@
 			});
 	};
 	var _tjmw$bus_countdown$Main$view = function (model) {
-		var _p8 = model.state;
-		switch (_p8.ctor) {
+		var _p10 = model.state;
+		switch (_p10.ctor) {
 			case 'LoadingStops':
 				return _tjmw$bus_countdown$Main$renderLoading;
 			case 'LoadingPredictions':
