@@ -44,17 +44,24 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
-	var _jquery = __webpack_require__(1);
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(2);
-
 	__webpack_require__(3);
 
-	var _Main = __webpack_require__(4);
+	__webpack_require__(4);
+
+	var _Main = __webpack_require__(5);
 
 	var _Main2 = _interopRequireDefault(_Main);
 
@@ -124,7 +131,7 @@
 	});
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10350,7 +10357,7 @@
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {/* jquery.signalR.core.js */
@@ -13309,10 +13316,10 @@
 	    $.signalR.version = "2.2.1";
 	}(__webpack_provided_window_dot_jQuery));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {"use strict";
@@ -13429,10 +13436,10 @@
 	    signalR.hub = $.hubConnection("/signalr", { useDefaultPath: false });
 	    $.extend(signalR, signalR.hub.createHubProxies());
 	})(__webpack_provided_window_dot_jQuery, window);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	
