@@ -39,7 +39,12 @@
   width: 30%;
 }
 
+.stop-data {
+  padding: 0 !important;
+}
+
 .stop-indicator {
+  padding: 0 !important;
   width: 25%;
 }
 
@@ -50,6 +55,13 @@
 
 .stop-compass-direction {
   margin-left: 0.75em;
+}
+
+.table-link {
+  color: #354B5E;
+  display: block;
+  padding: 0.5em 1em;
+  text-decoration: none;
 }
 
 .line {
