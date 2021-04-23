@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "gpxparser": "./gpxparser.js",
+    "three": "./three.js"
+  }
+}
